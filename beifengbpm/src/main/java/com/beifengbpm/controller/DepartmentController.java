@@ -64,7 +64,7 @@ public class DepartmentController {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			List<Department> list = departmentService.queryAllDeparts();
-			List<DepartmentNode> nodelist = new ArrayList<>();
+			List<DepartmentNode> nodelist = new ArrayList<DepartmentNode>();
 			for (Department d : list) {
 				if (null == d.getParentId()) {
 					DepartmentNode node = new DepartmentNode();
