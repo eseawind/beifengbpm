@@ -158,19 +158,179 @@ public class LeaveController extends BaseController {
 	
 	}
 	
-	//TODO 去申请人页面
+	//去申请人页面
+	@RequestMapping("/marksure/leave.do")
+	public String marksureleave(ModelMap model,HttpServletRequest request,HttpServletResponse response){
+		try {
+			request.setCharacterEncoding("UTF-8");
+			String id=request.getParameter("id");
+			String workitemId=request.getParameter("workitemId");
+			String processinsId=request.getParameter("processinsId");
+			Leave leave = leaveService.queryByProcessInsId(processinsId);
+			model.put("id", id);
+			model.put("workitemId", workitemId);
+			model.put("processinsId", processinsId);
+			model.put("leave", leave);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "marksureleave";
+		
+		
+	}
+	//  确认请假
+	@RequestMapping("/makrsure.do")
+	public void makesure(HttpServletRequest request,HttpServletResponse response){
+		try {
+			request.setCharacterEncoding("UTF-8");
+			String id=request.getParameter("id");
+			FlowUser user=getUser(request);
+			String workitemId=request.getParameter("workitemId");
+			String processinsId=request.getParameter("processinsId");
+			String leaveId=request.getParameter("leaveId");
+			WorkItem item=workitemService.queryItemById(workitemId);
+			int day=Integer.parseInt(request.getParameter("day"));
+			Map dataMap=new HashMap();
+			dataMap.put("day", ""+day);
+			if(day<=3){
+				dataMap.put("user", user.getFlowuserId()+"+1a5da6dc-2c73-4c0c-aeb5-63ad0e2d3476");
+			}else {
+				dataMap.put("user", "1a5da6dc-2c73-4c0c-aeb5-63ad0e2d3476");
+			}
+			workitemService.completeworkitem(getUser(request).getFlowuserId(), "请假模块", LeaveService.LEAVEMODELID, id, workitemId, processinsId, dataMap, "common");
+			//添加审批意见
+			String approvation=request.getParameter("approvation");
+			Approvation app=new Approvation();
+			app.setApprovation("确认请假");
+			app.setApprovationoption("确认");
+			app.setApprovationuserId(user.getFlowuserId());
+			app.setApprovationusername(user.getFlowusername());
+			app.setBusinessId(leaveId);
+			app.setProcessinsId(processinsId);
+			app.setWorkitemId(workitemId);
+			app.setWorkitemname(item.getWorkitemname());
+			approvationService.addApprovation(app);
+			writetoPage(response, "ok");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	
-	//TODO 确认请假
+		
+	}
+	//  到组长审批页面
+	@RequestMapping("/tozuzhangshenpin.do")
+	public String tozuzhangshenpin(ModelMap model,HttpServletRequest request,HttpServletResponse response){
+		try {
+			request.setCharacterEncoding("UTF-8");
+			String id=request.getParameter("id");
+			String workitemId=request.getParameter("workitemId");
+			String processinsId=request.getParameter("processinsId");
+			Leave leave = leaveService.queryByProcessInsId(processinsId);
+			List<Approvation> appList=approvationService.queryListByBusiness(leave.getLeaveId());
+			model.put("id", id);
+			model.put("workitemId", workitemId);
+			model.put("processinsId", processinsId);
+			model.put("leave", leave);
+			model.put("appList", appList);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "tozuzhangshenpi";
+	}
+	//  组长审批
+	@RequestMapping("/zuzhangshenpi.do")
+	public void zuzhangshenpi(HttpServletRequest request,HttpServletResponse response){
+		try{
+			request.setCharacterEncoding("UTF-8");
+			FlowUser user=getUser(request);
+			String id = request.getParameter("id");
+			String workitemId=request.getParameter("workitemId");
+			String processinsId = request.getParameter("processinsId");
+			String leaveId= request.getParameter("leaveId");
+			String createuserId=request.getParameter("createuserId");
+			WorkItem item=workitemService.queryItemById(workitemId);
+			Map dataMap = new HashMap();
+			dataMap.put("user", createuserId);
+			workitemService.completeworkitem(user.getFlowuserId(), "请假模块", LeaveService.LEAVEMODELID,  id, workitemId, processinsId, dataMap, "common");
+			//添加审批意见
+			String approvation=request.getParameter("aprovation");
+			Approvation app = new Approvation();
+			app.setApprovation(approvation);
+			app.setApprovationoption(request.getParameter("option"));
+			app.setApprovationuserId(user.getFlowuserId());
+			app.setApprovationusername(user.getFlowusername());
+			app.setBusinessId(leaveId);
+			app.setProcessinsId(processinsId);
+			app.setWorkitemId(workitemId);
+			app.setWorkitemname(item.getWorkitemname());
+			approvationService.addApprovation(app);
+			writetoPage(response, "ok");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	// 到确认页面
+	@RequestMapping("/toqueren.do")
+	public String toqueren(ModelMap model,HttpServletRequest request,HttpServletResponse response){
+		try{
+			request.setCharacterEncoding("UTF-8");
+			String id = request.getParameter("id");
+			String workitemId = request.getParameter("workitemId");
+			String processinsId = request.getParameter("processinsId");
+			Leave leave = leaveService.queryByProcessInsId(processinsId);
+			List<Approvation> appList=approvationService.queryListByBusiness(leave.getLeaveId());
+			model.put("id", id);
+			model.put("workitemId", workitemId);
+			model.put("processinsId", processinsId);
+			model.put("leave", leave);
+			model.put("appList", appList);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "toqueren";
+	}
 	
-	//TODO 到组长审批页面
-	
-	//TODO 组长审批
-	
-	//TODO 到确认页面
-	
-	
-	//TODO 确认
-	
+	//  确认
+	@RequestMapping("/quren.do")
+	public void queren(HttpServletRequest request,HttpServletResponse
+			response){
+		try{
+			request.setCharacterEncoding("UTF-8");
+			FlowUser user=getUser(request);
+			String id=request.getParameter("id");
+			String workitemId=request.getParameter("workitemId");
+			String processinsId=request.getParameter("processinsId");
+			String leaveId = request.getParameter("leaveId");
+			WorkItem item = workitemService.queryItemById(workitemId);
+			Map dataMap = new HashMap();
+			workitemService.completeworkitem(user.getFlowuserId(), "请假模块", LeaveService.LEAVEMODELID,  id, workitemId, processinsId, dataMap, "common" );
+			Leave leave = leaveService.querybyId(leaveId);
+			leave.setLeavestate("流程已结束");
+			leaveService.updateLeaveInfo(leave);
+			//添加审批意见
+			String approvation=request.getParameter("approvation");
+			Approvation app = new Approvation();
+			app.setApprovation(approvation);
+			app.setApprovationoption(request.getParameter("option"));
+			app.setApprovationuserId(user.getFlowuserId());
+			app.setApprovationusername(user.getFlowusername());
+			app.setBusinessId(leaveId);
+			app.setProcessinsId(processinsId);
+			app.setWorkitemId(workitemId);
+			app.setWorkitemname(item.getWorkitemname());
+			approvationService.addApprovation(app);
+			writetoPage(response, "ok");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 	
