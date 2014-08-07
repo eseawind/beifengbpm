@@ -97,6 +97,14 @@
 				<value>com.beifengbpm.entity.Department</value>
 				<value>com.beifengbpm.entity.FlowUser</value>
 				<value>com.beifengbpm.entity.FlowRole</value>
+				<value>com.beifengbpm.api.entity.FlowModel</value>
+				<value>com.beifengbpm.api.entity.WorkItem</value>
+				<value>com.beifengbpm.api.entity.ProcessIns</value>
+				<value>com.beifengbpm.api.entity.TodoTable</value>
+				<value>com.beifengbpm.api.entity.HaveTodoTable</value>
+				<value>com.beifengbpm.api.entity.WorkitemState</value>
+				<value>com.beifengbpm.business.entity.Leave</value>
+				<value>com.beifengbpm.business.entity.Approvation</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -127,9 +135,24 @@
 	<bean id="flowroleService" class="com.beifengbpm.service.impl.FlowRoleServiceImpl">
 		<property name="commonDao" ref="commonDao"></property>
 	</bean>
-	
-	
-	
+	<bean id="flowmodelService" class="com.beifengbpm.api.service.impl.FlowModelServiceImpl">
+		<property name="commonDao" ref="commonDao"></property>
+	</bean>
+	<bean id="workitemService" class="com.beifengbpm.api.service.impl.WorkItemServiceImpl">
+		<property name="commonDao" ref="commonDao"></property>
+	</bean>
+	<bean id="processinsService" class="com.beifengbpm.api.service.impl.ProcessInsServiceImpl">
+		<property name="commonDao" ref="commonDao"></property>
+	</bean>
+	<bean id="leaveService" class="com.beifengbpm.business.service.impl.LeaveServiceImpl">
+		<property name="commonDao" ref="commonDao"></property>
+	</bean>
+	<bean id="todotableService" class="com.beifengbpm.api.service.impl.TodoTableServiceImpl">
+		<property name="commonDao" ref="commonDao"></property>
+	</bean>
+	<bean id="approvationService" class="com.beifengbpm.business.service.impl.ApprovationServiceImpl">
+		<property name="commonDao" ref="commonDao"></property>
+	</bean>
 	
 	
 	
